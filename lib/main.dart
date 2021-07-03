@@ -1,5 +1,5 @@
-import 'dart:ffi';
-
+// import 'dart:ffi';
+import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'musique.dart';
 
@@ -37,8 +37,11 @@ class _MyHomePageState extends State<MyHomePage> {
     new Musique('Theme Flutter', 'Codabee', 'assets/deux.jpg',
         'https://codabee.com/wp-content/uploads/2018/06/deux.mp3'),
   ];
+
+  late AudioPlayer audioPlayer;
   late Musique maMusiqueActuelle;
   double position = 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -137,3 +140,5 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 enum ActionMusic { play, pause, rewind, forward }
+
+enum PlayerState { playing, stopped, paused }
