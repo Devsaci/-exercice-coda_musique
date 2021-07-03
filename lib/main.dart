@@ -1,4 +1,6 @@
 // import 'dart:ffi';
+import 'dart:async';
+
 import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'musique.dart';
@@ -39,6 +41,9 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   late AudioPlayer audioPlayer;
+  late StreamSubscription positionSub;
+  late StreamSubscription stateSubscription;
+
   late Musique maMusiqueActuelle;
   double position = 0.0;
 
@@ -137,7 +142,16 @@ class _MyHomePageState extends State<MyHomePage> {
           fontStyle: FontStyle.italic),
     );
   }
+
+  void configurationAudioPlayer() {
+    audioPlayer = new AudioPlayer();
+
+
+  }
+
 }
+
+
 
 enum ActionMusic { play, pause, rewind, forward }
 
