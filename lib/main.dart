@@ -1,4 +1,4 @@
-// import 'dart:ffi';
+import 'dart:ffi';
 import 'dart:async';
 
 import 'package:audioplayer/audioplayer.dart';
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
@@ -40,17 +40,21 @@ class _MyHomePageState extends State<MyHomePage> {
         'https://codabee.com/wp-content/uploads/2018/06/deux.mp3'),
   ];
 
-  late AudioPlayer audioPlayer;
-  late StreamSubscription positionSub;
-  late StreamSubscription stateSubscription;
+  AudioPlayer audioPlayer;
+  StreamSubscription positionSub;
+  StreamSubscription stateSubscription;
 
-  late Musique maMusiqueActuelle;
-  double position = 0.0;
+  Musique maMusiqueActuelle;
+  Duration position = new Duration(seconds: 0);
+  Duration duree = new Duration(seconds: 10);
+  PlayerState statut = PlayerState.stopped;
+  int index = 0;
 
   @override
   void initState() {
     super.initState();
     maMusiqueActuelle = maListeDeMusiques[0];
+    configurationAudioPlayer();
   }
 
   @override
@@ -79,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 bouton(Icons.fast_rewind, 30.0, ActionMusic.rewind),
-                bouton(Icons.play_arrow, 40.0, ActionMusic.play),
+                bouton((statut == PlayerState.playing) ?Icons.pause: Icons.play_arrow, 45.0, (statut == PlayerState.playing) ? ActionMusic.pause: ActionMusic.play),
                 bouton(Icons.fast_forward, 30.0, ActionMusic.forward)
               ],
             ),
@@ -91,14 +95,16 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             new Slider(
-                value: position,
+                value: position.inSeconds.toDouble(),
                 min: 0.0,
                 max: 30.0,
                 inactiveColor: Colors.white,
                 activeColor: Colors.red,
                 onChanged: (double d) {
                   setState(() {
-                    position = d;
+                    Duration nouvelleDuration =
+                        new Duration(seconds: d.toInt());
+                    position = nouvelleDuration;
                   });
                 })
           ],
@@ -116,10 +122,11 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           switch (action) {
             case ActionMusic.play:
-              print(('play'));
+              play();
               break;
             case ActionMusic.pause:
-              print(('pause();'));
+              pause();
+              // print(('pause();'));
               break;
             case ActionMusic.forward:
               print(('forward();'));
@@ -145,13 +152,47 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void configurationAudioPlayer() {
     audioPlayer = new AudioPlayer();
-
-
+    positionSub = audioPlayer.onAudioPositionChanged
+        .listen((pos) => setState(() => position = pos));
+    stateSubscription = audioPlayer.onPlayerStateChanged.listen((state) {
+      if (state == AudioPlayerState.PLAYING) {
+        setState(() {
+          duree = audioPlayer.duration;
+        });
+      } else if (state == AudioPlayerState.STOPPED) {
+        setState(() {
+          statut = PlayerState.stopped;
+        });
+      }
+    }, onError: (message) {
+      print('erreur: $message');
+      setState(() {
+        statut = PlayerState.stopped;
+        duree = new Duration(seconds: 0);
+        position = new Duration(seconds: 0);
+      });
+    });
   }
 
+  Future play() async {
+    await audioPlayer.play(maMusiqueActuelle.urlSong);
+    setState(() {
+      statut = PlayerState.playing;
+    });
+  }
+
+  Future pause() async {
+    await audioPlayer.pause();
+    setState(() {
+      statut = PlayerState.paused;
+    });
+  }
+
+
+
+
+
 }
-
-
 
 enum ActionMusic { play, pause, rewind, forward }
 
