@@ -97,8 +97,8 @@ class _MyHomePageState extends State<MyHomePage> {
             new Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                texteAvecStyle('0:0', 1.0),
-                texteAvecStyle('0:22', 1.0),
+                texteAvecStyle(fromDuration(position), 1.0),
+                texteAvecStyle(fromDuration(duree), 1.0),
               ],
             ),
             new Slider(
@@ -209,6 +209,12 @@ class _MyHomePageState extends State<MyHomePage> {
     configurationAudioPlayer();
     play();
   }
+
+  String fromDuration(Duration duree){
+    print(duree);
+   return duree.toString().split('.').first;
+  }
+
 
   void rewind() {
     if (position > Duration(seconds: 3)) {
