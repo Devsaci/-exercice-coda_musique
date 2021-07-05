@@ -83,7 +83,14 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 bouton(Icons.fast_rewind, 30.0, ActionMusic.rewind),
-                bouton((statut == PlayerState.playing) ?Icons.pause: Icons.play_arrow, 45.0, (statut == PlayerState.playing) ? ActionMusic.pause: ActionMusic.play),
+                bouton(
+                    (statut == PlayerState.playing)
+                        ? Icons.pause
+                        : Icons.play_arrow,
+                    80.0,
+                    (statut == PlayerState.playing)
+                        ? ActionMusic.pause
+                        : ActionMusic.play),
                 bouton(Icons.fast_forward, 30.0, ActionMusic.forward)
               ],
             ),
@@ -129,7 +136,8 @@ class _MyHomePageState extends State<MyHomePage> {
               // print(('pause();'));
               break;
             case ActionMusic.forward:
-              print(('forward();'));
+              forward();
+              // print(('forward();'));
               break;
             case ActionMusic.rewind:
               print(('rewind();'));
@@ -188,8 +196,17 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-
-
+  void forward() {
+    if (index == maListeDeMusiques.length - 1) {
+      index = 0;
+    } else {
+      index++;
+    }
+    maMusiqueActuelle = maListeDeMusiques[index];
+    audioPlayer.stop();
+    configurationAudioPlayer();
+    play();
+  }
 
 
 }
