@@ -130,17 +130,19 @@ class _MyHomePageState extends State<MyHomePage> {
           switch (action) {
             case ActionMusic.play:
               play();
+              print((' play(///////////////////////////////);'));
               break;
             case ActionMusic.pause:
               pause();
-              // print(('pause();'));
+              print(('pause(///////////////////////////////);'));
               break;
             case ActionMusic.forward:
               forward();
-              // print(('forward();'));
+              print(('forward(/////////////////////////////);'));
               break;
             case ActionMusic.rewind:
-              print(('rewind();'));
+              rewind();
+              print(('rewind(////////////////////////////////);'));
               break;
           }
         });
@@ -208,7 +210,21 @@ class _MyHomePageState extends State<MyHomePage> {
     play();
   }
 
-
+  void rewind() {
+    if (position > Duration(seconds: 3)) {
+      audioPlayer.seek(0.0);
+    } else {
+      if (index == 0) {
+        index = maListeDeMusiques.length - 1;
+      } else {
+        index--;
+      }
+      maMusiqueActuelle = maListeDeMusiques[index];
+      audioPlayer.stop();
+      configurationAudioPlayer();
+      play();
+    }
+  }
 }
 
 enum ActionMusic { play, pause, rewind, forward }
